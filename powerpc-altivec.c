@@ -34,6 +34,67 @@
 #include <string.h>
 #include <errno.h>
 #include <endian.h>
+#include <inttypes.h>
+
+
+
+#define STR(str) #str
+#define GETVSX(high32,low32, vmxReg)			\
+	"mfvsrd %["STR(high32)"],"STR(vmxReg)";"	\
+	"xxsldwi 1, "STR(vmxReg)","STR(vmxReg)", 2;"	\
+	"mfvsrd %["STR(low32)"], 1;"
+
+#define DUMPVSX(vsx)					\
+inline static void dumpvsx_##vsx(void)			\
+{							\
+  uint64_t high;					\
+  uint64_t low;						\
+							\
+  asm (							\
+	GETVSX(high,low,vsx)				\
+	: [high] "+r" (high),				\
+	  [low]  "+r" (low)				\
+	:						\
+	:						\
+	);						\
+							\
+	printf("VSX%d: %#.16"PRIx64"_", vsx, high);	\
+	printf("%#.16"PRIx64"\n", low);			\
+							\
+}							\
+
+DUMPVSX(32);
+DUMPVSX(33);
+DUMPVSX(34);
+DUMPVSX(35);
+DUMPVSX(36);
+DUMPVSX(37);
+DUMPVSX(38);
+DUMPVSX(39);
+DUMPVSX(40);
+DUMPVSX(41);
+DUMPVSX(42);
+DUMPVSX(43);
+DUMPVSX(44);
+DUMPVSX(45);
+DUMPVSX(46);
+DUMPVSX(47);
+DUMPVSX(48);
+DUMPVSX(49);
+DUMPVSX(50);
+DUMPVSX(51);
+DUMPVSX(52);
+DUMPVSX(53);
+DUMPVSX(54);
+DUMPVSX(55);
+DUMPVSX(56);
+DUMPVSX(57);
+DUMPVSX(58);
+DUMPVSX(59);
+DUMPVSX(60);
+DUMPVSX(61);
+DUMPVSX(62);
+DUMPVSX(63);
 
 #ifndef PTRACE_SETVRREGS
 
@@ -90,8 +151,120 @@ main (void)
 
 	/* Poke the Altivec hardware.
 	   We'll get SIGILL here on a machine not Altivec support.  */
+	asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;");
 	asm volatile ("vspltisb 0,-1" : : : "v0", "memory");
+	asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;");
 	asm volatile ("mtspr 256,%0" : : "r" (0x01010101UL) : "memory");
+	asm volatile ("nop; nop; nop; nop; nop; nop; nop; nop;");
+
+	dumpvsx_32();
+	dumpvsx_33();
+	dumpvsx_34();
+	dumpvsx_35();
+	dumpvsx_36();
+	dumpvsx_37();
+	dumpvsx_38();
+	dumpvsx_39();
+	dumpvsx_40();
+	dumpvsx_41();
+	dumpvsx_42();
+	dumpvsx_43();
+	dumpvsx_44();
+	dumpvsx_45();
+	dumpvsx_46();
+	dumpvsx_47();
+	dumpvsx_48();
+	dumpvsx_49();
+	dumpvsx_50();
+	dumpvsx_51();
+	dumpvsx_52();
+	dumpvsx_53();
+	dumpvsx_54();
+	dumpvsx_55();
+	dumpvsx_56();
+	dumpvsx_57();
+	dumpvsx_58();
+	dumpvsx_59();
+	dumpvsx_60();
+	dumpvsx_61();
+	dumpvsx_62();
+	dumpvsx_63();
+
+	i = raise (SIGUSR2);
+	assert (i == 0);
+
+	printf("--\n\n");
+
+	dumpvsx_32();
+	dumpvsx_33();
+	dumpvsx_34();
+	dumpvsx_35();
+	dumpvsx_36();
+	dumpvsx_37();
+	dumpvsx_38();
+	dumpvsx_39();
+	dumpvsx_40();
+	dumpvsx_41();
+	dumpvsx_42();
+	dumpvsx_43();
+	dumpvsx_44();
+	dumpvsx_45();
+	dumpvsx_46();
+	dumpvsx_47();
+	dumpvsx_48();
+	dumpvsx_49();
+	dumpvsx_50();
+	dumpvsx_51();
+	dumpvsx_52();
+	dumpvsx_53();
+	dumpvsx_54();
+	dumpvsx_55();
+	dumpvsx_56();
+	dumpvsx_57();
+	dumpvsx_58();
+	dumpvsx_59();
+	dumpvsx_60();
+	dumpvsx_61();
+	dumpvsx_62();
+	dumpvsx_63();
+
+	i = raise (SIGUSR2);
+	assert (i == 0);
+
+	printf("--\n\n");
+
+	dumpvsx_32();
+	dumpvsx_33();
+	dumpvsx_34();
+	dumpvsx_35();
+	dumpvsx_36();
+	dumpvsx_37();
+	dumpvsx_38();
+	dumpvsx_39();
+	dumpvsx_40();
+	dumpvsx_41();
+	dumpvsx_42();
+	dumpvsx_43();
+	dumpvsx_44();
+	dumpvsx_45();
+	dumpvsx_46();
+	dumpvsx_47();
+	dumpvsx_48();
+	dumpvsx_49();
+	dumpvsx_50();
+	dumpvsx_51();
+	dumpvsx_52();
+	dumpvsx_53();
+	dumpvsx_54();
+	dumpvsx_55();
+	dumpvsx_56();
+	dumpvsx_57();
+	dumpvsx_58();
+	dumpvsx_59();
+	dumpvsx_60();
+	dumpvsx_61();
+	dumpvsx_62();
+	dumpvsx_63();
 
 	i = raise (SIGUSR2);
 	assert (i == 0);
@@ -158,6 +331,31 @@ main (void)
     }
 
   assert (WSTOPSIG (status) == SIGUSR2);
+
+// --
+  errno = 0;
+  l = ptrace (PTRACE_CONT, child, 0l, 0l);
+  assert_perror (errno);
+  assert (l == 0);
+
+  got_pid = waitpid (child, &status, 0);
+  assert (got_pid == child);
+  assert (WIFSTOPPED (status));
+
+  assert (WSTOPSIG (status) == SIGUSR2);
+
+// --
+  errno = 0;
+  l = ptrace (PTRACE_CONT, child, 0l, 0l);
+  assert_perror (errno);
+  assert (l == 0);
+
+  got_pid = waitpid (child, &status, 0);
+  assert (got_pid == child);
+  assert (WIFSTOPPED (status));
+
+  assert (WSTOPSIG (status) == SIGUSR2);
+
 
   memset (vrregs, 0xb6, sizeof vrregs);
 
