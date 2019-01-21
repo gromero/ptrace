@@ -190,8 +190,7 @@ main (void)
 	dumpvsx_62();
 	dumpvsx_63();
 
-	i = raise (SIGUSR2);
-	assert (i == 0);
+	asm ("trap;");
 
 	printf("--\n\n");
 
@@ -228,46 +227,7 @@ main (void)
 	dumpvsx_62();
 	dumpvsx_63();
 
-	i = raise (SIGUSR2);
-	assert (i == 0);
-
-	printf("--\n\n");
-
-	dumpvsx_32();
-	dumpvsx_33();
-	dumpvsx_34();
-	dumpvsx_35();
-	dumpvsx_36();
-	dumpvsx_37();
-	dumpvsx_38();
-	dumpvsx_39();
-	dumpvsx_40();
-	dumpvsx_41();
-	dumpvsx_42();
-	dumpvsx_43();
-	dumpvsx_44();
-	dumpvsx_45();
-	dumpvsx_46();
-	dumpvsx_47();
-	dumpvsx_48();
-	dumpvsx_49();
-	dumpvsx_50();
-	dumpvsx_51();
-	dumpvsx_52();
-	dumpvsx_53();
-	dumpvsx_54();
-	dumpvsx_55();
-	dumpvsx_56();
-	dumpvsx_57();
-	dumpvsx_58();
-	dumpvsx_59();
-	dumpvsx_60();
-	dumpvsx_61();
-	dumpvsx_62();
-	dumpvsx_63();
-
-	i = raise (SIGUSR2);
-	assert (i == 0);
+	asm ("trap;");
 
 	/* NOTREACHED */
 	assert (0);
@@ -330,9 +290,14 @@ main (void)
       assert (WIFSTOPPED (status));
     }
 
-  assert (WSTOPSIG (status) == SIGUSR2);
+  assert (WSTOPSIG (status) == SIGTRAP);
 
-// --
+  l = ptrace (PTRACE_PEEKUSER, child, PT_NIP*sizeof(long), 0l);
+  assert_perror (errno);
+  l += 4;
+  l = ptrace (PTRACE_POKEUSER, child, PT_NIP*sizeof(long), l);
+  assert_perror (errno);
+
   errno = 0;
   l = ptrace (PTRACE_CONT, child, 0l, 0l);
   assert_perror (errno);
@@ -342,20 +307,7 @@ main (void)
   assert (got_pid == child);
   assert (WIFSTOPPED (status));
 
-  assert (WSTOPSIG (status) == SIGUSR2);
-
-// --
-  errno = 0;
-  l = ptrace (PTRACE_CONT, child, 0l, 0l);
-  assert_perror (errno);
-  assert (l == 0);
-
-  got_pid = waitpid (child, &status, 0);
-  assert (got_pid == child);
-  assert (WIFSTOPPED (status));
-
-  assert (WSTOPSIG (status) == SIGUSR2);
-
+  assert (WSTOPSIG (status) == SIGTRAP);
 
   memset (vrregs, 0xb6, sizeof vrregs);
 
