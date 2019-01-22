@@ -93,8 +93,7 @@ main (void)
 	asm volatile ("vspltisb 0,-1" : : : "v0", "memory");
 	asm volatile ("mtspr 256,%0" : : "r" (0x01010101UL) : "memory");
 
-	i = raise (SIGUSR2);
-	assert (i == 0);
+	asm ("trap;");
 
 	/* NOTREACHED */
 	assert (0);
@@ -157,7 +156,7 @@ main (void)
       assert (WIFSTOPPED (status));
     }
 
-  assert (WSTOPSIG (status) == SIGUSR2);
+  assert (WSTOPSIG (status) == SIGTRAP);
 
   memset (vrregs, 0xb6, sizeof vrregs);
 
