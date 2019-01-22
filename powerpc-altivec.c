@@ -132,6 +132,7 @@ main (void)
   long l;
   unsigned int vrregs[33*4 + 1];
   int missing = 0;
+  int x=0;
 
   atexit (cleanup);
   signal (SIGABRT, handler_fail);
@@ -143,8 +144,10 @@ main (void)
       case -1:
         assert (0);
       case 0:
-	l = ptrace (PTRACE_TRACEME, 0, NULL, NULL);
-	assert (l == 0);
+//	l = ptrace (PTRACE_TRACEME, 0, NULL, NULL);
+//	assert (l == 0);
+
+	while (x==0) printf(".");
 
 	i = raise (SIGUSR1);
 	assert (i == 0);
